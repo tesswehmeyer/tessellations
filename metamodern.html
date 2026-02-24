@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Metamodern</title>
+
+  <!-- PWA Meta Tags -->
+  <meta name="theme-color" content="#0d1117">
+  <meta name="description" content="Metamoderne Fähigkeiten entwickeln – täglich üben, reflektieren, wachsen.">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Metamodern">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="application-name" content="Metamodern">
+
+  <style>
+    :root {
+      --bg: #0d1117;
+      --bg2: #161b22;
+      --bg3: #1c2330;
+      --border: rgba(255,255,255,0.06);
+      --text: #c9d1d9;
+      --muted: #6e7681;
+      --teal: #39c5c0;   --teal-bg: rgba(57,197,192,0.12);
+      --purple: #a371f7; --purple-bg: rgba(163,113,247,0.12);
+      --amber: #e3b341;  --amber-bg: rgba(227,179,65,0.12);
+      --coral: #f78166;  --coral-bg: rgba(247,129,102,0.12);
+      --blue: #3b82f6;   --blue-bg: rgba(59,130,246,0.12);
+      --green: #22c55e;  --green-bg: rgba(34,197,94,0.12);
+      --pink: #ec4899;   --pink-bg: rgba(236,72,153,0.12);
+      --cyan: #06b6d4;   --cyan-bg: rgba(6,182,212,0.12);
+      --orange: #f97316; --orange-bg: rgba(249,115,22,0.12);
+      --indigo: #818cf8; --indigo-bg: rgba(129,140,248,0.12);
+      --nav-h: 60px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    /* ── PAGES ── */
+    .page { display: none; min-height: 100vh; padding-bottom: calc(var(--nav-h) + 16px); animation: fadeIn 0.18s ease; }
+    .page.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+    /* ── HEADER ── */
+    .page-header { padding: 20px 20px 12px; position: sticky; top: 0; background: var(--bg); z-index: 10; border-bottom: 1px solid var(--border); }
+    .page-header-row { display: flex; justify-content: space-between; align-items: flex-start; }
+    .page-title { font-size: 22px; font-weight: 600; letter-spacing: -0.3px; }
+    .date-label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 2px; }
+    .streak-badge { display: flex; align-items: center; gap: 5px; background: var(--amber-bg); color: var(--amber); border-radius: 20px; padding: 4px 10px; font-size: 13px; font-weight: 600; }
+    .back-btn { background: none; border: none; color: var(--muted); font-size: 14px; cursor: pointer; padding: 2px 0; display: flex; align-items: center; gap: 6px; }
+    .back-btn:hover { color: var(--text); }
+
+    /* ── SECTIONS ── */
+    .section { padding: 16px 20px 0; }
+    .section-label { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+
+    /* ── IMPULSE CARD ── */
+    .impulse-card { margin: 16px 20px; background: var(--bg2); border: 1px solid var(--border); border-radius: 14px; padding: 18px 20px; position: relative; overflow: hidden; }
+    .impulse-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--teal), var(--purple), var(--amber), var(--coral), var(--blue), var(--pink), var(--green)); }
+    .impulse-eyebrow { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+    .impulse-text { font-size: 15px; line-height: 1.55; color: var(--text); font-style: italic; }
+
+    /* ── SKILL GRID ── */
+    .skill-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 0 20px 16px; }
+    .skill-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 14px; padding: 14px 12px; cursor: pointer; transition: transform 0.12s, border-color 0.12s; position: relative; overflow: hidden; }
+    .skill-card:active { transform: scale(0.97); }
+    .skill-card.done { border-color: rgba(255,255,255,0.12); }
+    .skill-icon { font-size: 20px; margin-bottom: 7px; display: block; }
+    .skill-card-name { font-size: 12px; font-weight: 600; margin-bottom: 2px; line-height: 1.3; }
+    .skill-card-sub { font-size: 10px; color: var(--muted); }
+    .skill-done-dot { position: absolute; top: 9px; right: 9px; width: 7px; height: 7px; border-radius: 50%; background: #3fb950; }
+    .skill-progress-bar { margin-top: 9px; height: 3px; border-radius: 2px; background: rgba(255,255,255,0.06); overflow: hidden; }
+    .skill-progress-fill { height: 100%; border-radius: 2px; transition: width 0.4s ease; }
+
+    /* ── SKILL DETAIL ── */
+    .skill-header { padding: 16px 20px 14px; border-bottom: 1px solid var(--border); }
+    .skill-header-name { font-size: 18px; font-weight: 600; margin-bottom: 3px; }
+    .skill-header-desc { font-size: 13px; color: var(--muted); line-height: 1.5; }
+    .skill-tabs { display: flex; gap: 6px; padding: 12px 20px; overflow-x: auto; scrollbar-width: none; border-bottom: 1px solid var(--border); }
+    .skill-tabs::-webkit-scrollbar { display: none; }
+    .skill-tab { flex-shrink: 0; padding: 5px 12px; border-radius: 20px; border: 1px solid var(--border); background: none; color: var(--muted); font-size: 12px; cursor: pointer; transition: all 0.12s; white-space: nowrap; }
+    .skill-tab.active { color: var(--text); border-color: rgba(255,255,255,0.2); background: var(--bg3); }
+
+    /* ── EXERCISE ── */
+    .exercise-card { margin: 16px 20px; background: var(--bg2); border: 1px solid var(--border); border-radius: 14px; padding: 18px 18px 16px; }
+    .exercise-day { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 12px; display: block; }
+    .exercise-title { font-size: 16px; font-weight: 600; margin-bottom: 8px; }
+    .exercise-prompt { font-size: 14px; color: #8b949e; line-height: 1.6; }
+
+    /* ── TEXTAREA & BUTTONS ── */
+    .response-area { margin: 0 20px; }
+    .response-textarea { width: 100%; background: var(--bg3); border: 1px solid var(--border); border-radius: 10px; color: var(--text); font-family: inherit; font-size: 14px; line-height: 1.6; padding: 12px 14px; resize: none; min-height: 120px; outline: none; transition: border-color 0.12s; }
+    .response-textarea:focus { border-color: rgba(255,255,255,0.18); }
+    .response-textarea::placeholder { color: var(--muted); }
+    .btn-row { display: flex; gap: 8px; padding: 12px 20px 0; }
+    .btn { padding: 9px 18px; border-radius: 8px; border: none; font-size: 14px; font-weight: 500; cursor: pointer; transition: opacity 0.12s, transform 0.08s; }
+    .btn:active { transform: scale(0.97); }
+    .btn-primary { background: var(--text); color: var(--bg); flex: 1; }
+    .btn-secondary { background: var(--bg3); color: var(--text); border: 1px solid var(--border); }
+
+    /* ── DONE STATE ── */
+    .done-state { margin: 0 20px; background: rgba(63,185,80,0.08); border: 1px solid rgba(63,185,80,0.2); border-radius: 10px; padding: 14px 16px; }
+    .done-label { font-size: 12px; color: #3fb950; font-weight: 600; margin-bottom: 6px; }
+    .done-text { font-size: 14px; color: var(--text); line-height: 1.5; white-space: pre-wrap; }
+
+    /* ── PAST ENTRIES ── */
+    .past-responses { padding: 20px 20px 0; }
+    .past-response-item { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; margin-bottom: 8px; }
+    .past-response-meta { font-size: 11px; color: var(--muted); margin-bottom: 6px; }
+    .past-response-text { font-size: 13px; color: #8b949e; line-height: 1.5; white-space: pre-wrap; }
+
+    /* ── JOURNAL ── */
+    .journal-prompt-card { margin: 16px 20px; background: var(--bg2); border: 1px solid var(--border); border-radius: 14px; padding: 18px 20px; }
+    .journal-prompt-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+    .journal-prompt-text { font-size: 15px; line-height: 1.6; color: var(--text); }
+    .journal-entry-item { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; margin-bottom: 8px; }
+    .journal-entry-meta { font-size: 11px; color: var(--muted); margin-bottom: 6px; }
+    .journal-entry-prompt { font-size: 12px; color: var(--muted); margin-bottom: 4px; font-style: italic; }
+    .journal-entry-text { font-size: 13px; color: #8b949e; line-height: 1.5; white-space: pre-wrap; }
+
+    /* ── THEORY ── */
+    .theory-intro { margin: 16px 20px; background: var(--bg2); border: 1px solid var(--border); border-radius: 14px; padding: 18px 20px; position: relative; overflow: hidden; }
+    .theory-intro::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--teal), var(--purple), var(--amber), var(--coral), var(--blue), var(--pink), var(--green)); }
+    .theory-intro-title { font-size: 15px; font-weight: 600; margin-bottom: 10px; }
+    .theory-intro-text { font-size: 13px; color: #8b949e; line-height: 1.7; }
+    .theory-item { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 8px; overflow: hidden; }
+    .theory-btn { width: 100%; display: flex; align-items: center; gap: 10px; padding: 14px 16px; background: none; border: none; color: var(--text); cursor: pointer; text-align: left; }
+    .theory-btn-icon { font-size: 18px; flex-shrink: 0; }
+    .theory-btn-name { font-size: 13px; font-weight: 600; }
+    .theory-btn-sub { font-size: 11px; color: var(--muted); margin-top: 1px; }
+    .theory-chevron { margin-left: auto; font-size: 10px; color: var(--muted); transition: transform 0.2s; flex-shrink: 0; }
+    .theory-btn.open .theory-chevron { transform: rotate(180deg); }
+    .theory-body { display: none; padding: 0 16px 16px; font-size: 13px; color: #8b949e; line-height: 1.7; border-top: 1px solid var(--border); }
+    .theory-body.open { display: block; }
+    .theory-body p { margin-top: 12px; }
+    .theory-sources { margin: 8px 20px 0; background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; }
+    .theory-sources-title { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+    .theory-source-item { font-size: 12px; color: #8b949e; line-height: 1.6; padding: 4px 0; border-bottom: 1px solid var(--border); }
+    .theory-source-item:last-child { border-bottom: none; }
+
+    /* ── PROGRESS ── */
+    .progress-streak-card { margin: 16px 20px; background: var(--bg2); border: 1px solid var(--border); border-radius: 14px; padding: 20px; display: flex; gap: 20px; }
+    .progress-stat { flex: 1; text-align: center; }
+    .progress-stat-value { font-size: 32px; font-weight: 700; color: var(--amber); line-height: 1; margin-bottom: 4px; }
+    .progress-stat-label { font-size: 12px; color: var(--muted); }
+    .progress-divider { width: 1px; background: var(--border); }
+    .progress-skill-item { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; margin-bottom: 8px; }
+    .progress-skill-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .progress-skill-name { font-size: 14px; font-weight: 500; }
+    .progress-skill-count { font-size: 13px; color: var(--muted); }
+    .progress-bar-bg { height: 4px; background: rgba(255,255,255,0.06); border-radius: 2px; overflow: hidden; }
+    .progress-bar-fill { height: 100%; border-radius: 2px; transition: width 0.5s ease; }
+    .week-label { font-size: 11px; color: var(--muted); margin-top: 6px; }
+
+    /* ── EXPORT / INSTALL ── */
+    .data-actions { display: flex; gap: 8px; margin: 0 20px 20px; flex-wrap: wrap; }
+    .data-btn { flex: 1; min-width: 130px; padding: 10px 14px; background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; color: var(--text); font-size: 13px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 7px; justify-content: center; transition: border-color 0.12s; }
+    .data-btn:hover { border-color: rgba(255,255,255,0.14); }
+    .data-btn:active { transform: scale(0.97); }
+    #install-btn { display: none; }
+
+    /* ── NAV ── */
+    #bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; height: var(--nav-h); background: rgba(13,17,23,0.92); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-top: 1px solid var(--border); display: flex; z-index: 100; }
+    .nav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; background: none; border: none; color: var(--muted); cursor: pointer; transition: color 0.12s; padding: 0; }
+    .nav-btn.active { color: var(--text); }
+    .nav-icon { font-size: 17px; line-height: 1; }
+    .nav-label { font-size: 9px; letter-spacing: 0.2px; }
+
+    /* ── TOAST ── */
+    #toast { position: fixed; bottom: calc(var(--nav-h) + 16px); left: 50%; transform: translateX(-50%) translateY(10px); background: #3fb950; color: #0d1117; padding: 9px 18px; border-radius: 20px; font-size: 13px; font-weight: 600; opacity: 0; transition: all 0.25s ease; z-index: 200; white-space: nowrap; }
+    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* ── COLORS ── */
+    .c-teal{color:var(--teal)} .c-purple{color:var(--purple)} .c-amber{color:var(--amber)} .c-coral{color:var(--coral)}
+    .c-blue{color:var(--blue)} .c-green{color:var(--green)} .c-pink{color:var(--pink)} .c-cyan{color:var(--cyan)}
+    .c-orange{color:var(--orange)} .c-indigo{color:var(--indigo)}
+  </style>
+</head>
+<body>
+
+<div id="app">
+
+  <!-- HOME -->
+  <div id="page-home" class="page active">
+    <div class="page-header">
+      <div class="page-header-row">
+        <div>
+          <div class="date-label" id="home-date"></div>
+          <div class="page-title">Metamodern</div>
+        </div>
+        <div class="streak-badge"><span>✦</span><span id="home-streak-n">0</span> Tage</div>
+      </div>
+    </div>
+    <div class="impulse-card">
+      <div class="impulse-eyebrow">Tagesimpuls</div>
+      <div class="impulse-text" id="impulse-text"></div>
+    </div>
+    <div class="section"><div class="section-label">Fähigkeiten</div></div>
+    <div class="skill-grid" id="skill-grid"></div>
+  </div>
+
+  <!-- PRACTICE -->
+  <div id="page-practice" class="page">
+    <div class="page-header">
+      <button class="back-btn" id="back-btn"><span>←</span> Übersicht</button>
+    </div>
+    <div id="skill-detail"></div>
+  </div>
+
+  <!-- THEORY -->
+  <div id="page-theory" class="page">
+    <div class="page-header">
+      <div class="page-title">Theorie</div>
+    </div>
+    <div id="theory-content"></div>
+  </div>
+
+  <!-- JOURNAL -->
+  <div id="page-journal" class="page">
+    <div class="page-header"><div class="page-title">Journal</div></div>
+    <div id="journal-content"></div>
+  </div>
+
+  <!-- PROGRESS -->
+  <div id="page-progress" class="page">
+    <div class="page-header"><div class="page-title">Fortschritt</div></div>
+    <div id="progress-content"></div>
+  </div>
+
+</div>
+
+<!-- BOTTOM NAV -->
+<nav id="bottom-nav">
+  <button class="nav-btn active" data-page="home">
+    <span class="nav-icon">⌂</span><span class="nav-label">Übersicht</span>
+  </button>
+  <button class="nav-btn" data-page="practice">
+    <span class="nav-icon">◈</span><span class="nav-label">Üben</span>
+  </button>
+  <button class="nav-btn" data-page="theory">
+    <span class="nav-icon">▲</span><span class="nav-label">Theorie</span>
+  </button>
+  <button class="nav-btn" data-page="journal">
+    <span class="nav-icon">◻</span><span class="nav-label">Journal</span>
+  </button>
+  <button class="nav-btn" data-page="progress">
+    <span class="nav-icon">◎</span><span class="nav-label">Fortschritt</span>
+  </button>
+</nav>
+
+<div id="toast"></div>
+
+<script>
+/* ========================================================
+   DATA
+   ======================================================== */
+
+const SKILLS = [
+  {
+    id: 'sowohl-als-auch', name: 'Sowohl-Als-Auch', subtitle: 'Widersprüche halten',
+    icon: '◑', colorClass: 'c-teal', color: '#39c5c0',
+    description: 'Gegensätzliche Wahrheiten gleichzeitig anerkennen, ohne den Widerspruch aufzulösen. Das Entweder-oder wird zum Sowohl-als-auch.',
+    theory: 'Das Sowohl-Als-Auch-Denken geht über Hegels Dialektik hinaus: Es sucht keine abschließende Synthese, sondern hält die Spannung dauerhaft aus. F. Scott Fitzgerald schrieb, es sei "das Zeichen eines erstklassigen Intellekts, zwei einander widersprechende Ideen gleichzeitig im Kopf zu halten und trotzdem noch funktionsfähig zu bleiben." In der Praxis bedeutet das nicht Kompromiss, sondern Komplexität – die Bereitschaft, widersprüchliche Wahrheiten als gleich real anzuerkennen, ohne eine davon wegzuerklären.',
+    exercises: [
+      { title: 'Gegensätzliche Wahrheiten', prompt: 'Schreibe zwei gegensätzliche Dinge, die beide über dich wahr sind. Lasse sie nebeneinander stehen, ohne eine zu relativieren.' },
+      { title: 'Liebe und Abneigung', prompt: 'Beschreibe etwas, das du gleichzeitig liebst und ablehnst. Was verrät diese Spannung über dich?' },
+      { title: 'Beide Seiten würdigen', prompt: 'Nenne eine Situation, die sich widersprüchlich anfühlt. Schreibe je einen Absatz, der jede Seite vollständig und mit Würde darstellt.' },
+      { title: 'Sowohl als auch', prompt: '"Ich bin sowohl ____ als auch ____." Fülle diesen Satz 5 Mal aus. Überrasche dich selbst.' },
+      { title: 'Fremde Weisheit', prompt: 'Wähle eine Meinung, der du widersprichst. Schreibe die tiefste Wahrheit, die darin stecken könnte.' },
+      { title: 'Scheitern als Erfolg', prompt: 'Welches Scheitern war gleichzeitig ein Erfolg? Beschreibe beide Dimensionen, ohne eine abzuschwächen.' },
+      { title: 'Widerspruch mit Mitgefühl', prompt: 'Was ist dein größter innerer Widerspruch? Schreibe darüber mit derselben Freundlichkeit, die du einem guten Freund entgegenbringen würdest.' },
+    ]
+  },
+  {
+    id: 'meta-bewusstsein', name: 'Meta-Bewusstsein', subtitle: 'Denken & Resilienz',
+    icon: '◎', colorClass: 'c-purple', color: '#a371f7',
+    description: 'Den eigenen Geist beim Denken beobachten und in Unsicherheit handlungsfähig bleiben. Ironie und Aufrichtigkeit bewusst wahrnehmen – eigene Muster kritisch hinterfragen.',
+    theory: 'Die Idee, das eigene Denken zu beobachten, ist so alt wie Sokrates\' "Erkenne dich selbst" – und so modern wie die kognitive Psychologie. Metamodern wird sie, wenn sie nicht zur Lähmung führt ("Alles ist Konstrukt, also nichts zählt"), sondern zur informierten Handlungsfähigkeit. Viktor Frankl beschrieb die "Trotz-Kraft" – das Vermögen, auch in schwierigen Umständen eine innere Haltung zu wählen. Diese Verbindung von Selbstbeobachtung und Resilienz, von Klarheit über das eigene Denken und der Fähigkeit, trotzdem zu handeln, ist der Kern dieser Fähigkeit.',
+    exercises: [
+      { title: 'Meine Geschichte heute', prompt: 'Welche Geschichte erzählst du dir heute über dich selbst? Schreibe sie auf – und dann: Wer erzählt diese Geschichte?' },
+      { title: 'Aufrichtig oder distanziert?', prompt: 'Wann warst du heute vollständig aufrichtig? Wann hast du dich mit Ironie auf Distanz gehalten? Was hat dich dazu bewogen?' },
+      { title: 'Stille Annahmen', prompt: 'Notiere 3 Annahmen, die du heute unhinterfragt getroffen hast. Woher kommen sie?' },
+      { title: 'Denkmuster hinterfragen', prompt: 'Welches Denk- oder Reaktionsmuster hat sich heute wiederholt? Woher kommt es – und was wäre, wenn du es nicht hättest?' },
+      { title: 'VUCA-Standort', prompt: 'Was ist gerade volatil, unsicher, komplex oder mehrdeutig in deinem Leben? Und: Was ist trotzdem dein nächster Schritt?' },
+      { title: 'Ressourcen kartieren', prompt: 'Was gibt dir Halt in unsicheren Zeiten? Nenne 5 echte Ressourcen – und wann du sie zuletzt bewusst genutzt hast.' },
+      { title: 'Wohlwollender Zeuge', prompt: 'Schreibe aus der Perspektive eines wohlwollenden Zeugen über deinen heutigen Tag. Was würde dieser Zeuge sagen?' },
+    ]
+  },
+  {
+    id: 'pragm-idealismus', name: 'Pragmat. Idealismus', subtitle: 'Ideal und Wirklichkeit',
+    icon: '◈', colorClass: 'c-amber', color: '#e3b341',
+    description: 'Aus echten Werten heraus handeln, ohne von ihnen gelähmt zu werden. Die Brücke bauen zwischen dem, was sein sollte, und dem, was möglich ist.',
+    theory: 'William James und John Dewey begründeten den Pragmatismus: Ideen sind dann wertvoll, wenn sie uns orientieren und handlungsfähig halten. Hans Vaihinger ergänzte mit seiner "Als ob"-Philosophie: Wir können Ideale als nützliche Fiktionen ernst nehmen, auch wenn wir wissen, dass sie nicht vollständig realisierbar sind. Der metamoderne pragmatische Idealismus verbindet beides: Ideale verfolgen, wissend dass man nie ganz ankommt – und genau deshalb weitergehen.',
+    exercises: [
+      { title: 'Wert und Schritt', prompt: 'Was ist dein tiefster Wert gerade? Welcher konkrete, kleine Schritt verwirklicht ihn heute – auch unvollkommen?' },
+      { title: 'Vision und Anfang', prompt: 'Beschreibe deine Vision für einen Bereich deines Lebens in 3 Sätzen. Dann: Was ist der kleinste mögliche erste Schritt?' },
+      { title: 'Gut genug', prompt: 'Wo lähmst du dich durch ein zu hohes Ideal? Was wäre „gut genug", und was würdest du gewinnen, wenn du es akzeptierst?' },
+      { title: 'Notwendiger Kompromiss', prompt: 'Welchen Kompromiss hast du gemacht oder erwägst du? Unterscheide: Ist es ein notwendiger Kompromiss oder eine Kapitulation?' },
+      { title: 'Brücke bauen', prompt: 'Beschreibe die Lücke zwischen dem, was du für richtig hältst, und dem, was du tust. Was wäre ein ehrlicher, konkreter Schritt, um diese Lücke kleiner zu machen?' },
+      { title: 'Glauben ohne Handeln', prompt: 'Wo glaubst du an etwas, ohne es zu leben? Wo handelst du, ohne wirklich dahinter zu stehen? Was braucht jede dieser Seiten?' },
+      { title: 'Unvollständige Güte', prompt: 'Was kannst du heute tun, das gut ist – auch wenn es nicht perfekt, nicht vollständig, nicht ideal ist?' },
+    ]
+  },
+  {
+    id: 'kompl-toleranz', name: 'Komplexitätstoleranz', subtitle: 'Mit Ambiguität sitzen',
+    icon: '◇', colorClass: 'c-coral', color: '#f78166',
+    description: 'Unsicherheit, Widersprüche und Nicht-Wissen aushalten können. Den Drang zur vorschnellen Auflösung bemerken und bewusst innehalten.',
+    theory: 'John Keats nannte es "negative capability" – die Fähigkeit, in Unsicherheit, Mysterium und Zweifel zu verweilen, ohne gereizt nach Auflösung zu greifen. Donella Meadows zeigte in "Thinking in Systems", wie Eingriffe in komplexe Systeme stets unbeabsichtigte Folgen haben. Komplexitätstoleranz ist die psychologische Antwort auf diese epistemische Lage: Wir müssen handeln, ohne vollständig zu verstehen – und das als Bedingung akzeptieren, nicht als Versagen.',
+    exercises: [
+      { title: 'Ungelöste Frage', prompt: 'Wähle eine Frage in deinem Leben, die du nicht auflösen kannst. Sitze ein paar Minuten damit. Schreibe dann, was passiert ist – nicht die Antwort, sondern das Sitzen selbst.' },
+      { title: 'Nicht erklären', prompt: 'Beschreibe eine Situation in deinem Leben, ohne sie zu erklären, zu deuten oder aufzulösen. Lass sie stehen wie ein Gemälde.' },
+      { title: 'Nicht-Wissen', prompt: 'Was weißt du nicht – über dich, über jemand anderen, über deine Zukunft? Wie fühlt sich dieses Nicht-Wissen an?' },
+      { title: 'Sehnsucht nach Klarheit', prompt: 'Wo wünschst du dir gerade Eindeutigkeit? Was würdest du verlieren, wenn du sie hättest? Was hättest du gewonnen?' },
+      { title: 'Drei gleichzeitige Wahrheiten', prompt: 'Nenne 3 gleichzeitig wahre, sich widersprechende Dinge über eine wichtige Beziehung oder Situation in deinem Leben.' },
+      { title: 'Frage halten', prompt: 'Was ist die offenste, tiefste Frage, die du gerade trägst? Schreibe sie auf. Dann schreibe, wie es sich anfühlt, sie nicht zu beantworten.' },
+      { title: 'Reichtum der Komplexität', prompt: 'Wo macht Komplexität dein Leben reicher – nicht schwieriger, sondern tiefer? Was würdest du verlieren, wenn alles einfach und klar wäre?' },
+    ]
+  },
+  {
+    id: 'oszillation', name: 'Oszillation', fullName: 'Oszillation & Paradoxie',
+    subtitle: 'Paradoxien navigieren',
+    icon: '⇌', colorClass: 'c-blue', color: '#3b82f6',
+    description: 'Bewusst zwischen Ernsthaftigkeit und Ironie, Naivität und Reflexion, Hoffnung und Zynismus pendeln. Widersprüche nicht auflösen, sondern als produktive Spannung nutzen.',
+    theory: 'Vermeulen und van den Akker beschreiben den metamodernen Kulturzustand als ein Pendeln "zwischen einer Multiplizität moderner Naivitäten und postmoderner Ironien." Das Pendel ist keine Unentschlossenheit – es ist die strukturelle Realität eines Bewusstseins, das mehrere inkompatible Wahrheiten kennt und trotzdem handelt. Paul Ricœurs "produktive Paradoxie" zeigt: Gerade weil wir widersprüchlich sind, hören wir nicht auf zu denken und zu suchen.',
+    exercises: [
+      { title: 'Pendelübung', prompt: 'Wähle eine Überzeugung. Schreibe sie zuerst mit vollem Ernst – dann mit ironischer Distanz. Was bleibt in beiden Versionen wahr?' },
+      { title: 'Naiv und reflektiert', prompt: 'Beschreibe eine Situation aus völlig naiver Sicht (als würdest du sie zum ersten Mal sehen) und dann aus reflektierter Distanz. Welche Version zeigt mehr?' },
+      { title: 'Paradoxie halten', prompt: 'Welche Paradoxie trägst du gerade in dir? Beschreibe sie so klar wie möglich – ohne sie aufzulösen.' },
+      { title: 'Hoffnung und Zynismus', prompt: 'Wo pendelst du gerade zwischen Hoffnung und Zynismus? Schreibe beide Positionen mit echter Überzeugung auf.' },
+      { title: 'Ernst und Ironie', prompt: 'Schreibe drei Sätze mit voller Ernsthaftigkeit über etwas Wichtiges. Füge nun Ironie hinzu. Verlieren die Sätze ihre Gültigkeit?' },
+      { title: 'Widerspruch als Ressource', prompt: 'Welcher innere Widerspruch gibt dir Energie, statt dich zu lähmen? Wie nutzt du ihn bewusst?' },
+      { title: 'Bewusstes Pendeln', prompt: 'In welchem Bereich deines Lebens würdest du von mehr Beweglichkeit zwischen Gegensätzen profitieren? Wie würde das konkret aussehen?' },
+    ]
+  },
+  {
+    id: 'synthese', name: 'Synthese', fullName: 'Synthese & Integration',
+    subtitle: 'Gegensätze verknüpfen',
+    icon: '⊕', colorClass: 'c-green', color: '#22c55e',
+    description: 'Gegensätze verknüpfen und neue, sinnstiftende Erzählungen schaffen, die sich ihrer eigenen Konstruiertheit bewusst sind. Keine falsche Einheit – eine lebendige Synthese.',
+    theory: 'Jean-François Lyotard proklamierte 1979 das Ende der großen Metanarrative. Der Metamodernismus akzeptiert die Diagnose – und geht einen Schritt weiter: Wir brauchen neue Metanarrative, aber solche, die wissen, dass sie Metanarrative sind. Paul Ricœurs "narrative Identität" zeigt, dass Menschen nicht ohne sinnstiftende Erzählungen leben können. Die Kunst liegt darin, Geschichten zu erzählen, die komplex genug sind, um der Wirklichkeit zu entsprechen – und ehrlich genug, um ihre eigene Konstruiertheit nicht zu verschweigen.',
+    exercises: [
+      { title: 'Gegensätze verbinden', prompt: 'Wähle zwei scheinbar gegensätzliche Werte (z.B. Freiheit und Sicherheit). Schreibe eine Erzählung, in der beide wahr und notwendig sind.' },
+      { title: 'Tradition und Wandel', prompt: 'Wo verbindest du in deinem Leben Altes und Neues? Welche Geschichte entsteht an diesem Berührungspunkt?' },
+      { title: 'Meine Metanarrative', prompt: 'Was ist die sinnstiftende Erzählung, die dein Leben zusammenhält? Schreibe sie auf – und dann: Wann hast du sie zuletzt bewusst gewählt?' },
+      { title: 'Unerwartete Verbindung', prompt: 'Nenne zwei Ideen aus völlig verschiedenen Bereichen deines Lebens. Wo berühren sie sich? Was entsteht an diesem Schnittpunkt?' },
+      { title: 'Erzählung aktualisieren', prompt: 'Welche Geschichte, die du dir über dich erzählst, ist überfällig für eine Aktualisierung? Wie würde die neue Version lauten?' },
+      { title: 'Brücke auf höherer Ebene', prompt: 'Was passt in deinem Leben scheinbar nicht zusammen? Schreibe eine Integration – keine Auflösung, sondern ein Sowohl-Als-Auch auf höherer Ebene.' },
+      { title: 'Konstruierte Bedeutung', prompt: 'Welche Bedeutung hast du bewusst für dich konstruiert – und glaubst ihr trotzdem vollständig? Was macht das mit dir?' },
+    ]
+  },
+  {
+    id: 'neoromantik', name: 'Neoromantik', fullName: 'Neoromantik & Aufrichtigkeit',
+    subtitle: 'Aufrichtig & sensibel',
+    icon: '✦', colorClass: 'c-pink', color: '#ec4899',
+    description: 'Das Alltägliche mit Bedeutungstiefe verbinden. Romantische Sensibilität ohne Kitsch – aufrichtig bewegt sein von dem, was da ist, ohne es zu überhöhen oder wegzuironisieren.',
+    theory: 'David Foster Wallace prägte den Begriff "New Sincerity" als Gegenbewegung zu einer postmodernen Ironie, die alles auf Distanz hält. Die Neoromantik geht weiter: Sie wagt echtes Staunen, echte Erschütterung, echte Bewunderung. Novalis sah in der Romantik die Aufgabe, "dem Gewöhnlichen einen geheimnisvollen Anschein zu geben." Das metamoderne Update: diese Offenheit zuzulassen, wissend, dass man sie auch ironisch betrachten könnte – und sie trotzdem zu wählen.',
+    exercises: [
+      { title: 'Das Unscheinbare', prompt: 'Was war heute unscheinbar – und was steckt an Tiefe darin? Schreibe darüber, als wäre es das Wichtigste der Welt.' },
+      { title: 'Alltag mit Tiefe', prompt: 'Wähle etwas Gewöhnliches aus deinem heutigen Tag. Schreibe darüber mit voller Ernsthaftigkeit und Sensibilität – ohne ins Kitschige zu fallen.' },
+      { title: 'Aufrichtig bewegt', prompt: 'Wann warst du heute berührt, bewegt oder bewundert – auch wenn es nur kurz war? Was hat das ausgelöst?' },
+      { title: 'Ohne Schutzschicht', prompt: 'Beschreibe etwas, das dir wirklich wichtig ist, ohne Ironie als Puffer. Was ändert sich, wenn du es direkt sagst?' },
+      { title: 'Verborgene Schönheit', prompt: 'Was in deiner Umgebung trägt Schönheit in sich, die du normalerweise übersiehst? Beschreibe es so, dass jemand anderes sie sehen könnte.' },
+      { title: 'Romantischer Blick', prompt: 'Schreibe einen kurzen Text über etwas Alltägliches mit romantischer Intensität und ohne Augenzwinkern. Wie fühlt sich das an?' },
+      { title: 'Ironie als Schutz', prompt: 'Wo setzt du Ironie ein, um echte Tiefe zu vermeiden? Was würdest du riskieren, wenn du sie dort wegließest?' },
+    ]
+  },
+  {
+    id: 'systemdenken', name: 'Systemdenken', fullName: 'Systemische Kompetenz',
+    subtitle: 'Ganzheitlich denken',
+    icon: '⬡', colorClass: 'c-cyan', color: '#06b6d4',
+    description: 'Verstehen, dass alles mit allem zusammenhängt – Ökologie, Ökonomie, Kultur, Beziehungen. Probleme ganzheitlich betrachten und die eigene Einbettung in größere Systeme erkennen.',
+    theory: 'Gregory Bateson nannte den Fehler, Dinge aus ihrem Kontext herauszulösen, einen "Irrtum aus dem Zusammenhang reißen". Donella Meadows beschrieb, wie Systemstrukturen Verhaltensmuster erzeugen – oft ohne Absicht einzelner Akteure. Metamodern wird Systemdenken, wenn es nicht in Fatalismus mündet ("Das System ist schuld"), sondern in demütiges, hebelpunktorientiertes Handeln: Wir sind Teil der Systeme, die wir verändern wollen.',
+    exercises: [
+      { title: 'Eingebettetes Problem', prompt: 'Wähle ein Problem in deinem Leben. Beschreibe die drei Ebenen (persönlich, sozial, gesellschaftlich), in denen es eingebettet ist.' },
+      { title: 'Unbeabsichtigte Folgen', prompt: 'Welche unbeabsichtigten Folgen hatte eine Entscheidung, die du getroffen hast? Was hat sich weiterverzweigt?' },
+      { title: 'Lokales und Globales', prompt: 'Beschreibe eine Verbindung zwischen deinem konkreten Alltag und einem größeren System. Was wird sichtbar, wenn du diese Verbindung ziehst?' },
+      { title: 'Systemische Lücke', prompt: 'Welches Problem in deinem Umfeld würde von einem ganzheitlicheren Ansatz profitieren? Was wird systematisch übersehen?' },
+      { title: 'Blind im System', prompt: 'Wo bist du Teil eines Systems, das du nicht vollständig verstehst? Was weißt du nicht – und solltest du es wissen?' },
+      { title: 'Langzeitwirkung', prompt: 'Wie beeinflusst dein heutiges Handeln die Möglichkeiten anderer – morgen, in zehn Jahren, nach dir?' },
+      { title: 'Systemkritik mit Empathie', prompt: 'Nenne ein System, das du kritisierst. Beschreibe auch, was daran funktioniert und warum es so entstanden ist.' },
+    ]
+  },
+  {
+    id: 'resilienz', name: 'Resilienz', fullName: 'Resilienz & Selbstreflexion',
+    subtitle: 'In Unsicherheit handeln',
+    icon: '◉', colorClass: 'c-orange', color: '#f97316',
+    description: 'In einer unsicheren, komplexen Welt handlungsfähig bleiben. Eigene Denkmuster kritisch hinterfragen, aus Erschütterungen lernen und trotz Ungewissheit den nächsten Schritt tun.',
+    theory: 'Boris Cyrulnik und Viktor Frankl zeigten, dass Resilienz nicht Unverwundbarkeit bedeutet, sondern die Fähigkeit, erschüttert zu werden – und sich neu zu orientieren. Die VUCA-Welt (Volatile, Uncertain, Complex, Ambiguous) ist keine vorübergehende Krise, sondern die Grundbedingung des 21. Jahrhunderts. Metamoderne Resilienz verbindet das mit Selbstreflexion: Widerstandsfähigkeit entsteht nicht durch Abschotten, sondern durch ehrliches Erkennen der eigenen Muster, Grenzen und Ressourcen.',
+    exercises: [
+      { title: 'VUCA-Moment', prompt: 'Was ist gerade volatil, unsicher, komplex oder mehrdeutig in deinem Leben? Beschreibe deinen aktuellen Standort in der Ungewissheit.' },
+      { title: 'Muster erkennen', prompt: 'Welches Denkmuster schränkt dich gerade ein? Woher kommt es – und was wäre, wenn du es nicht hättest?' },
+      { title: 'Aus Erschütterung lernen', prompt: 'Was hat dich zuletzt wirklich erschüttert? Was hat das über dich und deine Ressourcen gezeigt?' },
+      { title: 'Trotzdem', prompt: 'Was weißt du nicht und kannst du nicht kontrollieren? Und: Was ist trotzdem dein nächster Schritt?' },
+      { title: 'Elastizität', prompt: 'In welchen Bereichen bist du widerstandsfähig? Wo brichst du eher, statt zu biegen? Was macht den Unterschied?' },
+      { title: 'Kritische Selbstreflexion', prompt: 'Welche Überzeugung von dir selbst überprüfst du gerade kaum – und solltest du es tun?' },
+      { title: 'Ressourcen kartieren', prompt: 'Was gibt dir Halt in unsicheren Zeiten? Nenne 5 echte Ressourcen – und wann du sie zuletzt bewusst genutzt hast.' },
+    ]
+  },
+  {
+    id: 'kollaboration', name: 'Kollaboration', fullName: 'Partizipation & Kollaboration',
+    subtitle: 'Kollektiv gestalten',
+    icon: '⊹', colorClass: 'c-indigo', color: '#818cf8',
+    description: 'Auf kollektive Intelligenz setzen und offene Prozesse mitgestalten. Nicht für andere entscheiden, sondern mit anderen. Die eigene Stimme einbringen und andere Stimmen ermöglichen.',
+    theory: 'Jürgen Habermas\' "kommunikatives Handeln" beschreibt, wie Vernunft im Dialog entsteht, nicht im Monolog. Otto Scharmers "Theory U" zeigt, wie tiefe kollektive Kreativität ein gemeinsames Wahrnehmen aus der Zukunft heraus erfordert – "Presencing". Metamoderne Kollaboration anerkennt dabei: Das Ergebnis echter Zusammenarbeit ist unbekannt. Wer wirklich partizipiert, gibt die Kontrolle über den Ausgang ab – und gewinnt die Möglichkeit, etwas zu erschaffen, das allein nicht denkbar gewesen wäre.',
+    exercises: [
+      { title: 'Übersehene Stimme', prompt: 'Was könntest du heute von jemandem lernen, dessen Perspektive du normalerweise wenig Raum gibst? Was würdest du hören, wenn du wirklich zuhörtest?' },
+      { title: 'Einzigartiger Beitrag', prompt: 'An welcher kollektiven Intelligenz nimmst du teil (Team, Community, Familie)? Was kannst nur du einbringen – und tust du es?' },
+      { title: 'Stille Abstinenz', prompt: 'Wo hältst du dich aus Prozessen heraus, in denen deine Stimme fehlt? Was kostet diese Abwesenheit die Gruppe?' },
+      { title: 'Mit statt für', prompt: 'Wo gestaltest du gerade etwas für andere, statt mit ihnen? Was würde sich verändern, wenn du sie einbeziehst?' },
+      { title: 'Mehr Perspektiven', prompt: 'Welche Entscheidung in deinem Umfeld wäre besser mit mehr Perspektiven? Welche Stimme fehlt noch?' },
+      { title: 'Geteiltes Wissen', prompt: 'Was trägst du heute zu einem gemeinsamen Wissen oder Raum bei? Was gibst du weiter, das anderen nützt?' },
+      { title: 'Echte Kollaboration', prompt: 'Beschreibe einen Moment echter Zusammenarbeit – wo das gemeinsame Ergebnis mehr war als die Summe der Teile. Was hat das ermöglicht?' },
+    ]
+  },
+];
+
+const JOURNAL_PROMPTS = [
+  'Wo oszillierst du gerade zwischen Hoffnung und Skepsis?',
+  'Was bedeutet dir etwas, obwohl du weißt, dass Bedeutung konstruiert ist?',
+  'Welche Spannung trägst du gerade in dir – und wie trägst du sie?',
+  'Wann warst du heute naiv? Wann weise? Was ist der Unterschied?',
+  'Was weißt du sicher? Was weißt du nicht? Wo ist die Grenze?',
+  'Wo lebst du authentisch, trotz Wissen um die Konstruiertheit von Authentizität?',
+  'Was wäre, wenn sowohl deine hellste Hoffnung als auch dein tiefster Zweifel wahr wären?',
+  'Welche alte Bedeutung verlierst du gerade? Welche neue entsteht?',
+  'Wann hast du zuletzt etwas mit voller Ernsthaftigkeit getan – ohne jede Ironie?',
+  'Welche Geschichte erzählt deine Umgebung gerade – und glaubst du ihr?',
+  'Was trägst du mit dir, das noch keinen Namen hat?',
+  'Wo bist du gerade sowohl überzeugend als auch unsicher?',
+  'Was willst du, obwohl du weißt, dass das Wollen nicht reicht?',
+  'Wofür schämst du dich und findest es gleichzeitig verständlich?',
+  'Wo oszillierst du heute bewusst zwischen zwei gegensätzlichen Haltungen?',
+  'Welche sinnstiftende Erzählung hält dein Leben zusammen – und hast du sie bewusst gewählt?',
+  'Wann warst du zuletzt aufrichtig bewegt von etwas Alltäglichem?',
+  'In welchen Systemen lebst du, ohne sie bewusst wahrzunehmen?',
+  'Was gibt dir Halt, wenn die Welt unübersichtlich wird?',
+  'Wessen Stimme fehlt gerade in deinen Entscheidungen?',
+  'Was synthetisierst du gerade – welche Gegensätze verbindest du zu etwas Neuem?',
+];
+
+const DAILY_IMPULSE = [
+  'Der Weg aus dem Postmodernen führt nicht zurück, sondern hindurch.',
+  'Aufrichtigkeit ist keine Naivität. Sie ist eine bewusste Wahl – trotz allem Wissen.',
+  'Halte die Spannung. Löse sie nicht auf.',
+  'Ironie schützt. Aufrichtigkeit verwundet. Beides ist notwendig.',
+  'Es ist möglich, beide Wahrheiten gleichzeitig zu halten – und dabei handlungsfähig zu bleiben.',
+  'Bedeutung entsteht in der Spannung zwischen dem, was wir wissen, und dem, woran wir trotzdem glauben.',
+  'Die Fähigkeit, mit Ambiguität zu sitzen, ist eine Form von Mut.',
+  'Weder naiv noch zynisch. Informiert aufrichtig.',
+  'Komplexität zu vereinfachen ist manchmal notwendig. Es zu vergessen, nie.',
+  'Der Ernst ist echt. Die Ironie ist echt. Beide.',
+  'Metamodernes Handeln heißt: trotzdem.',
+  'Es ist keine Schwäche, beide Seiten zu sehen. Es ist eine Übung.',
+  'Wir oszillieren. Das ist kein Fehler – das ist die Bewegung selbst.',
+  'Pragmatismus ohne Idealismus verliert seinen Kompass. Idealismus ohne Pragmatismus verliert seinen Boden.',
+  'Die Wahrheit ist nicht das Gegenteil von Zweifel.',
+  'Aufrichtigkeit und Ironie sind keine Gegensätze. Sie sind Schichten derselben Haltung.',
+  'Was wäre, wenn Nicht-Wissen kein Mangel wäre, sondern ein Raum?',
+  'Im Sowohl-Als-Auch liegt mehr Wirklichkeit als im Entweder-Oder.',
+  'Man kann eine konstruierte Bedeutung vollständig ernst nehmen.',
+  'Das Ziel ist nicht Auflösung, sondern das Aushalten.',
+  'Romantisch zu sein heißt nicht, naiv zu sein. Es heißt: trotzdem zu fühlen.',
+  'Systeme denken nicht. Nur Menschen denken – aber sie denken immer in Systemen.',
+  'Resilienz ist nicht Härte. Sie ist Elastizität – biegen, nicht brechen.',
+  'Kollaboration beginnt damit, die eigene Antwort als unvollständig zu akzeptieren.',
+  'Die Synthese ist keine Mitte. Sie ist eine neue Position, die beide Extreme kennt.',
+  'Zu oszillieren ist kein Zeichen von Schwäche. Es ist das Zeichen eines lebendigen Geistes.',
+  'Aufrichtigkeit ist kein Mangel an Ironie. Sie ist Ironie, die sich selbst überwindet.',
+  'Das Systemische denkt in Jahrzehnten. Das Persönliche denkt in Momenten. Beide haben recht.',
+  'Wer wirklich partizipiert, akzeptiert, dass das Ergebnis unbekannt ist.',
+  'Sinn, der sich seiner Konstruiertheit bewusst ist, ist nicht weniger Sinn.',
+];
+
+/* ========================================================
+   STATE & STORAGE
+   ======================================================== */
+
+let currentPage = 'home';
+let currentSkillId = 'sowohl-als-auch';
+
+const defaultData = () => ({ exercises: {}, journalEntries: [], streak: { current: 0, best: 0, lastDate: null } });
+let appData = defaultData();
+
+function loadData() {
+  try { const r = localStorage.getItem('metamodern-v1'); if (r) appData = { ...defaultData(), ...JSON.parse(r) }; }
+  catch (e) { appData = defaultData(); }
+}
+function saveData() { try { localStorage.setItem('metamodern-v1', JSON.stringify(appData)); } catch(e){} }
+
+/* ========================================================
+   DATE UTILS
+   ======================================================== */
+
+const todayStr = () => new Date().toISOString().slice(0,10);
+
+function dayOfYear() {
+  const n = new Date(), s = new Date(n.getFullYear(),0,0);
+  return Math.floor((n-s)/86400000);
+}
+const getExerciseIndex = () => dayOfYear() % 7;
+
+function formatDate(iso) {
+  return new Date(iso+'T00:00:00').toLocaleDateString('de-DE', {day:'numeric',month:'long',year:'numeric'});
+}
+function todayFormatted() {
+  return new Date().toLocaleDateString('de-DE', {weekday:'long',day:'numeric',month:'long'});
+}
+
+/* ========================================================
+   STREAK
+   ======================================================== */
+
+function updateStreak() {
+  const today = todayStr(), s = appData.streak;
+  if (!SKILLS.some(sk => (appData.exercises[sk.id]||[]).some(e=>e.date===today))) return;
+  if (s.lastDate === today) return;
+  const yest = new Date(); yest.setDate(yest.getDate()-1);
+  s.current = s.lastDate === yest.toISOString().slice(0,10) ? s.current+1 : 1;
+  s.best = Math.max(s.current, s.best);
+  s.lastDate = today;
+  saveData();
+}
+
+/* ========================================================
+   QUERIES
+   ======================================================== */
+
+const getSkill = id => SKILLS.find(s=>s.id===id);
+const todayExercise = id => getSkill(id).exercises[getExerciseIndex()];
+
+function hasCompletedToday(id) {
+  const today=todayStr(), idx=getExerciseIndex();
+  return (appData.exercises[id]||[]).some(e=>e.date===today&&e.exerciseIdx===idx);
+}
+const countTotal = id => (appData.exercises[id]||[]).length;
+function weekCount(id) {
+  const wAgo = new Date(); wAgo.setDate(wAgo.getDate()-7);
+  return (appData.exercises[id]||[]).filter(e=>e.date>=wAgo.toISOString().slice(0,10)).length;
+}
+
+/* ========================================================
+   RENDER: HOME
+   ======================================================== */
+
+function renderHome() {
+  document.getElementById('home-date').textContent = todayFormatted();
+  document.getElementById('home-streak-n').textContent = appData.streak.current;
+  document.getElementById('impulse-text').textContent = DAILY_IMPULSE[dayOfYear()%DAILY_IMPULSE.length];
+  document.getElementById('skill-grid').innerHTML = SKILLS.map(sk => {
+    const done = hasCompletedToday(sk.id);
+    const pct = Math.min(100,(weekCount(sk.id)/7)*100);
+    return `<div class="skill-card${done?' done':''}" onclick="openSkill('${sk.id}')">
+      ${done?'<div class="skill-done-dot"></div>':''}
+      <span class="skill-icon ${sk.colorClass}">${sk.icon}</span>
+      <div class="skill-card-name">${sk.name}</div>
+      <div class="skill-card-sub">${sk.subtitle}</div>
+      <div class="skill-progress-bar"><div class="skill-progress-fill" style="width:${pct}%;background:${sk.color}"></div></div>
+    </div>`;
+  }).join('');
+}
+
+/* ========================================================
+   RENDER: PRACTICE
+   ======================================================== */
+
+function renderPractice() {
+  const skill=getSkill(currentSkillId), ex=todayExercise(currentSkillId);
+  const done=hasCompletedToday(currentSkillId), today=todayStr(), idx=getExerciseIndex();
+
+  const tabs = SKILLS.map(sk=>`
+    <button class="skill-tab${sk.id===currentSkillId?' active':''}" onclick="switchSkill('${sk.id}')">
+      <span class="${sk.colorClass}">${sk.icon}</span> ${sk.name}
+    </button>`).join('');
+
+  const past = (appData.exercises[currentSkillId]||[])
+    .filter(e=>!(e.date===today&&e.exerciseIdx===idx))
+    .sort((a,b)=>b.date.localeCompare(a.date)).slice(0,8);
+
+  document.getElementById('skill-detail').innerHTML = `
+    <div class="skill-header">
+      <div class="skill-header-name ${skill.colorClass}">${skill.icon} ${skill.fullName||skill.name}</div>
+      <div class="skill-header-desc">${skill.description}</div>
+    </div>
+    <div class="skill-tabs">${tabs}</div>
+    <div class="exercise-card">
+      <span class="exercise-day">Übung ${idx+1} von 7</span>
+      <div class="exercise-title">${ex.title}</div>
+      <div class="exercise-prompt">${ex.prompt}</div>
+    </div>
+    ${done ? doneStateHtml(today,idx,skill) : `
+      <div class="response-area">
+        <textarea id="exercise-ta" class="response-textarea" placeholder="Schreibe hier deine Gedanken…" rows="5"></textarea>
+      </div>
+      <div class="btn-row"><button class="btn btn-primary" onclick="submitExercise()">Abschließen</button></div>`}
+    ${past.length ? `<div class="past-responses">
+      <div class="section-label">Frühere Einträge</div>
+      ${past.map(e=>{const ex2=skill.exercises[e.exerciseIdx]||{title:'–'};return`
+        <div class="past-response-item">
+          <div class="past-response-meta">${formatDate(e.date)} · ${ex2.title}</div>
+          <div class="past-response-text">${esc(e.response)}</div>
+        </div>`;}).join('')}
+    </div>` : ''}
+    <div style="height:8px"></div>`;
+}
+
+function doneStateHtml(today, idx, skill) {
+  const e=(appData.exercises[skill.id]||[]).find(e=>e.date===today&&e.exerciseIdx===idx);
+  return `<div class="done-state"><div class="done-label">✓ Heute abgeschlossen</div><div class="done-text">${esc(e?.response||'')}</div></div>`;
+}
+
+/* ========================================================
+   RENDER: THEORY
+   ======================================================== */
+
+function renderTheory() {
+  document.getElementById('theory-content').innerHTML = `
+    <div class="theory-intro">
+      <div class="theory-intro-title">Was ist Metamodernismus?</div>
+      <div class="theory-intro-text">
+        Metamodernismus ist eine Antwort auf die Erschöpfung des Postmodernismus. Wo der Postmodernismus Bedeutung, Wahrheit und Ideale dekonstruierte, wagt der Metamodernismus etwas Radikales: Er <em>rekonstruiert</em> Bedeutung – im vollen Wissen ihrer Konstruiertheit.
+        <br><br>
+        Das Pendel schwingt. Zwischen modernem Idealismus und postmoderner Ironie, zwischen Ernst und Distanz, zwischen Naivität und Reflexion. Der Metamodernismus nennt diese Bewegung <em>Oszillation</em> – nicht als Fehler, sondern als produktive Spannung.
+        <br><br>
+        Geprägt wurde der Begriff 2010 von Timotheus Vermeulen und Robin van den Akker. Hanzi Freinacht entwickelte ihn im Kontext politischer Philosophie weiter.
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-label">Die 10 Fähigkeiten</div>
+      ${SKILLS.map(sk=>`
+        <div class="theory-item">
+          <button class="theory-btn" id="th-${sk.id}" onclick="toggleTheory('${sk.id}')">
+            <span class="theory-btn-icon ${sk.colorClass}">${sk.icon}</span>
+            <div style="flex:1;min-width:0">
+              <div class="theory-btn-name">${sk.fullName||sk.name}</div>
+              <div class="theory-btn-sub">${sk.subtitle}</div>
+            </div>
+            <span class="theory-chevron">▼</span>
+          </button>
+          <div class="theory-body" id="tb-${sk.id}">
+            <p>${esc(sk.theory)}</p>
+          </div>
+        </div>`).join('')}
+    </div>
+    <div class="theory-sources">
+      <div class="theory-sources-title">Quellen &amp; Weiterlesen</div>
+      <div class="theory-source-item">Vermeulen, T. &amp; van den Akker, R. — <em>Notes on Metamodernism</em> (2010)</div>
+      <div class="theory-source-item">Freinacht, H. — <em>The Listening Society</em> (2017)</div>
+      <div class="theory-source-item">Meadows, D. — <em>Thinking in Systems</em> (2008)</div>
+      <div class="theory-source-item">Frankl, V. — <em>...trotzdem Ja zum Leben sagen</em> (1946)</div>
+      <div class="theory-source-item">Bateson, G. — <em>Steps to an Ecology of Mind</em> (1972)</div>
+      <div class="theory-source-item">Scharmer, O. — <em>Theory U</em> (2007)</div>
+      <div class="theory-source-item">Vaihinger, H. — <em>Die Philosophie des Als Ob</em> (1911)</div>
+    </div>
+    <div style="height:8px"></div>`;
+}
+
+function toggleTheory(id) {
+  const body=document.getElementById('tb-'+id), btn=document.getElementById('th-'+id);
+  const wasOpen=body.classList.contains('open');
+  document.querySelectorAll('.theory-body').forEach(b=>b.classList.remove('open'));
+  document.querySelectorAll('.theory-btn').forEach(b=>b.classList.remove('open'));
+  if(!wasOpen){body.classList.add('open');btn.classList.add('open');}
+}
+
+/* ========================================================
+   RENDER: JOURNAL
+   ======================================================== */
+
+function renderJournal() {
+  const today=todayStr(), prompt=JOURNAL_PROMPTS[dayOfYear()%JOURNAL_PROMPTS.length];
+  const doneToday=(appData.journalEntries||[]).some(e=>e.date===today);
+  const entries=(appData.journalEntries||[]).sort((a,b)=>b.date.localeCompare(a.date)).slice(0,12);
+
+  document.getElementById('journal-content').innerHTML = `
+    <div class="journal-prompt-card">
+      <div class="journal-prompt-label">Impuls für heute</div>
+      <div class="journal-prompt-text">${esc(prompt)}</div>
+    </div>
+    ${doneToday ? `<div style="padding:0 20px"><div class="done-state">
+      <div class="done-label">✓ Heute geschrieben</div>
+      <div class="done-text">${esc(entries.find(e=>e.date===today)?.content||'')}</div>
+    </div></div>` : `
+      <div class="response-area">
+        <textarea id="journal-ta" class="response-textarea" placeholder="Schreibe hier frei…" rows="6"></textarea>
+      </div>
+      <div class="btn-row"><button class="btn btn-primary" onclick="submitJournal()">Speichern</button></div>`}
+    ${entries.length?`<div class="section"><div class="section-label">Einträge</div>
+      ${entries.map(e=>`<div class="journal-entry-item">
+        <div class="journal-entry-meta">${formatDate(e.date)}</div>
+        <div class="journal-entry-prompt">${esc(e.prompt)}</div>
+        <div class="journal-entry-text">${esc(e.content)}</div>
+      </div>`).join('')}
+    </div>`:''}
+    <div style="height:8px"></div>`;
+}
+
+/* ========================================================
+   RENDER: PROGRESS
+   ======================================================== */
+
+function renderProgress() {
+  const s=appData.streak, total=SKILLS.reduce((a,sk)=>a+countTotal(sk.id),0);
+  document.getElementById('progress-content').innerHTML = `
+    <div class="progress-streak-card">
+      <div class="progress-stat"><div class="progress-stat-value">${s.current}</div><div class="progress-stat-label">Aktuelle Serie</div></div>
+      <div class="progress-divider"></div>
+      <div class="progress-stat"><div class="progress-stat-value" style="color:#a371f7">${s.best}</div><div class="progress-stat-label">Beste Serie</div></div>
+      <div class="progress-divider"></div>
+      <div class="progress-stat"><div class="progress-stat-value" style="color:#39c5c0">${total}</div><div class="progress-stat-label">Insgesamt</div></div>
+    </div>
+    <div class="section"><div class="section-label">Daten exportieren</div></div>
+    <div class="data-actions">
+      <button class="data-btn" onclick="exportJSON()"><span>↓</span> JSON-Backup</button>
+      <button class="data-btn" onclick="exportText()"><span>↓</span> Als Text</button>
+      <button class="data-btn" id="install-btn" onclick="installApp()"><span>⊞</span> Installieren</button>
+    </div>
+    <div class="section"><div class="section-label">Fähigkeiten</div>
+      ${SKILLS.map(sk=>{
+        const t=countTotal(sk.id), w=weekCount(sk.id), p=Math.min(100,(w/7)*100);
+        return`<div class="progress-skill-item">
+          <div class="progress-skill-row">
+            <div class="progress-skill-name ${sk.colorClass}">${sk.icon} ${sk.name}</div>
+            <div class="progress-skill-count">${t} gesamt</div>
+          </div>
+          <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${p}%;background:${sk.color}"></div></div>
+          <div class="week-label">${w} von 7 in dieser Woche</div>
+        </div>`;}).join('')}
+    </div>
+    <div style="height:8px"></div>`;
+
+  // Show install button if prompt is available
+  if (deferredInstallPrompt) document.getElementById('install-btn').style.display='flex';
+}
+
+/* ========================================================
+   ACTIONS
+   ======================================================== */
+
+function submitExercise() {
+  const ta=document.getElementById('exercise-ta');
+  if(!ta||!ta.value.trim()){ta&&ta.focus();return;}
+  if(!appData.exercises[currentSkillId]) appData.exercises[currentSkillId]=[];
+  appData.exercises[currentSkillId].push({date:todayStr(),exerciseIdx:getExerciseIndex(),response:ta.value.trim()});
+  updateStreak(); saveData(); showToast('Abgeschlossen ✓'); renderPractice();
+}
+
+function submitJournal() {
+  const ta=document.getElementById('journal-ta');
+  if(!ta||!ta.value.trim()){ta&&ta.focus();return;}
+  if(!appData.journalEntries) appData.journalEntries=[];
+  appData.journalEntries.push({date:todayStr(),prompt:JOURNAL_PROMPTS[dayOfYear()%JOURNAL_PROMPTS.length],content:ta.value.trim()});
+  saveData(); showToast('Gespeichert ✓'); renderJournal();
+}
+
+function openSkill(id) { currentSkillId=id; navigate('practice'); }
+function switchSkill(id) { currentSkillId=id; renderPractice(); }
+
+/* ── Export ── */
+
+function exportJSON() {
+  const blob=new Blob([JSON.stringify(appData,null,2)],{type:'application/json'});
+  triggerDownload(blob,`metamodern-backup-${todayStr()}.json`);
+  showToast('JSON exportiert ✓');
+}
+
+function exportText() {
+  let txt = `METAMODERN — Exportiert am ${new Date().toLocaleDateString('de-DE')}\n${'─'.repeat(48)}\n\n`;
+
+  for(const sk of SKILLS){
+    const entries=(appData.exercises[sk.id]||[]).sort((a,b)=>b.date.localeCompare(a.date));
+    if(!entries.length) continue;
+    txt+=`## ${sk.fullName||sk.name}\n\n`;
+    entries.forEach(e=>{
+      const ex=sk.exercises[e.exerciseIdx]||{title:'?'};
+      txt+=`${formatDate(e.date)} · ${ex.title}\n${e.response}\n\n`;
+    });
+  }
+
+  if(appData.journalEntries?.length){
+    txt+=`## Journal\n\n`;
+    [...appData.journalEntries].sort((a,b)=>b.date.localeCompare(a.date)).forEach(e=>{
+      txt+=`${formatDate(e.date)}\nPrompt: ${e.prompt}\n${e.content}\n\n`;
+    });
+  }
+
+  const blob=new Blob([txt],{type:'text/plain;charset=utf-8'});
+  triggerDownload(blob,`metamodern-eintraege-${todayStr()}.txt`);
+  showToast('Text exportiert ✓');
+}
+
+function triggerDownload(blob, filename) {
+  const url=URL.createObjectURL(blob), a=document.createElement('a');
+  a.href=url; a.download=filename; a.click(); URL.revokeObjectURL(url);
+}
+
+/* ── PWA Install ── */
+
+let deferredInstallPrompt = null;
+
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredInstallPrompt = e;
+  const btn = document.getElementById('install-btn');
+  if (btn) btn.style.display = 'flex';
+});
+
+function installApp() {
+  if (!deferredInstallPrompt) return;
+  deferredInstallPrompt.prompt();
+  deferredInstallPrompt.userChoice.then(r => {
+    if (r.outcome === 'accepted') showToast('App installiert ✓');
+    deferredInstallPrompt = null;
+    const btn = document.getElementById('install-btn');
+    if (btn) btn.style.display = 'none';
+  });
+}
+
+window.addEventListener('appinstalled', () => showToast('App installiert ✓'));
+
+/* ========================================================
+   NAVIGATION
+   ======================================================== */
+
+function navigate(page) {
+  currentPage=page;
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.page===page));
+  if(page==='home') renderHome();
+  else if(page==='practice') renderPractice();
+  else if(page==='theory') renderTheory();
+  else if(page==='journal') renderJournal();
+  else if(page==='progress') renderProgress();
+}
+
+/* ========================================================
+   HELPERS
+   ======================================================== */
+
+function esc(s) {
+  return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+let toastTimer=null;
+function showToast(msg) {
+  const el=document.getElementById('toast');
+  el.textContent=msg; el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>el.classList.remove('show'),2200);
+}
+
+/* ========================================================
+   PWA SETUP (Manifest + Service Worker)
+   ======================================================== */
+
+function setupPWA() {
+  // Manifest via Blob URL (works on Chrome/Edge when served over HTTP/S)
+  const manifest = {
+    name: 'Metamodern',
+    short_name: 'Metamodern',
+    description: 'Metamoderne Fähigkeiten entwickeln',
+    start_url: location.pathname || '/',
+    display: 'standalone',
+    orientation: 'portrait',
+    background_color: '#0d1117',
+    theme_color: '#0d1117',
+    icons: [{
+      src: `data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='100' fill='%230d1117'/><text x='256' y='340' font-size='300' text-anchor='middle' fill='%2339c5c0'>◑</text></svg>`,
+      sizes: 'any',
+      type: 'image/svg+xml',
+      purpose: 'any maskable'
+    }]
+  };
+  const mBlob = new Blob([JSON.stringify(manifest)], {type:'application/manifest+json'});
+  const mUrl = URL.createObjectURL(mBlob);
+  const link = document.createElement('link');
+  link.rel='manifest'; link.href=mUrl;
+  document.head.appendChild(link);
+
+  // Service Worker (only on https or localhost)
+  if ('serviceWorker' in navigator && (location.protocol==='https:' || location.hostname==='localhost')) {
+    const sw = `
+      const CACHE='metamodern-sw-v1';
+      self.addEventListener('install',e=>{self.skipWaiting();});
+      self.addEventListener('activate',e=>{e.waitUntil(clients.claim());});
+      self.addEventListener('fetch',e=>{
+        e.respondWith(caches.match(e.request).then(cached=>{
+          if(cached)return cached;
+          return fetch(e.request).then(res=>{
+            const clone=res.clone();
+            caches.open(CACHE).then(c=>c.put(e.request,clone));
+            return res;
+          }).catch(()=>cached);
+        }));
+      });`;
+    const swBlob = new Blob([sw], {type:'text/javascript'});
+    const swUrl = URL.createObjectURL(swBlob);
+    navigator.serviceWorker.register(swUrl).catch(()=>{});
+  }
+}
+
+/* ========================================================
+   INIT
+   ======================================================== */
+
+function init() {
+  loadData();
+  document.querySelectorAll('.nav-btn').forEach(b=>b.addEventListener('click',()=>navigate(b.dataset.page)));
+  document.getElementById('back-btn').addEventListener('click',()=>navigate('home'));
+  setupPWA();
+  renderHome();
+}
+
+init();
+</script>
+</body>
+</html>
